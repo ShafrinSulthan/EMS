@@ -20,7 +20,7 @@ const LoginForm = ({role, title, subtitle}) => {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
         <LoginLeftSide />
-        <div className="flex-1 flex item-center justify-center p-6 sm:p-12 bg-white">
+        <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-white">
             <div className="w-full max-w-md animate-fade-in">
                 <Link to="/login" className="inline-flex items-center gap-2 text-sm text-slate-400 mb-10 hover:text-slate-700 transition-colors">
                     <ArrowLeftIcon size={16}/> Back to portal
@@ -34,7 +34,7 @@ const LoginForm = ({role, title, subtitle}) => {
                 </div>
 
                 {error && (
-                    <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl text-sm flex item-start gap-3 mb-6">
+                    <div className="bg-rose-50 border border-rose-200 text-rose-700 p-4 rounded-xl text-sm flex items-start gap-3 mb-6">
                         <div className='w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0' />
 
                         {error}
@@ -58,9 +58,9 @@ const LoginForm = ({role, title, subtitle}) => {
                         <div className="relative">
                             <input id="password" type={showPassword ? "text" : "password"} value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                required className="pr-11"
+                                required 
                                 placeholder="••••••••"
-                                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+                                className="w-full pr-11 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}

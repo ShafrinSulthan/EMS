@@ -7,7 +7,7 @@ const Sidebar = () => {
 
     const {pathname} = useLocation()
     const [userName, setUserName] = useState('')
-    const [mobilOpen, setMobileOpen] = useState(false)
+    const [mobileOpen, setMobileOpen] = useState(false)
 
     useEffect(() => {
         setUserName(dummyProfileData.firstName + " "+ dummyProfileData.lastName) 
@@ -16,7 +16,7 @@ const Sidebar = () => {
         setMobileOpen(false)
     }, [pathname])
 
-    const role = " " || "EMPLOYEE";
+    const role = useAuth()?.user?.role || "EMPLOYEE";
 
     const navItems =[
         {name:"Dashboard", href: "/dashboard", icon: LayoutGridIcon},
@@ -43,7 +43,7 @@ const Sidebar = () => {
                     <div >
                         <p className="font-semibold text-[13px] text-white tracking-wide">
                             Employee MS</p>
-                        <p className="texxt-[11px] text-slate-500 font-medium">
+                        <p className="text-[11px] text-slate-500 font-medium">
                             Management System</p>
                     </div>
                 </div>
@@ -93,7 +93,7 @@ const Sidebar = () => {
                             {
                                 isActive && <div className='absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500'/>
                             }
-                            <item.icon className={'w-[17px] h-[17px] shrink-0 ${isActive ? "text-indigo-300":"text-slate-400 group-hover:text-slate-300"}'}/>
+                            <item.icon className={`w-[17px] h-[17px] shrink-0 ${isActive ? "text-indigo-300":"text-slate-400 group-hover:text-slate-300"}`}/>
                             <span className='flex-1'>{item.name}</span>
                             {isActive && <ChevronsRightIcon className='w-3.5 h-3.5 text-indigo-500/50'/>}
                         </Link>
@@ -117,25 +117,25 @@ const Sidebar = () => {
   return (
     <>
     {/* Mobile hamburger menu */}
-    <button onClick={() => setMobilOpen(true)}
-    className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-900 text-white rounded-lg shadow-lg border boder-white/10">
+    <button onClick={() => setMobileOpen(true)}
+    className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-slate-900 text-white rounded-lg shadow-lg border border-white/10">
         <MenuIcon size={20} />
     </button>
 
     {/* Mobile overlay */}
-    {mobilOpen && (
+    {mobileOpen && (
         <div className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" 
-        onClick={() => setMobilOpen(false)}/>
+        onClick={() => setMobileOpen(false)}/>
     )}
 
     {/* Sidebar - desktop */}
-    <aside className='hidden lg:flex flex-col w-64 h-full bg-linear-to-b from-slate-900 to-slate-950 text-white border-r border-white/10 via-slate-900 shrink-0'>
+    <aside className='hidden lg:flex flex-col w-64 h-full bg-gradient-to-b from-slate-900 to-slate-950 text-white border-r border-white/10 via-slate-900 shrink-0'>
         {sidebarContent}
     </aside>
 
     {/* Sidebar - Mobile */}
-    <aside className="lg:hidden fixed inset-y-0 left-0 w-72 bg-linear-to-b from-slate-900 to-slate-950 text-white  via-slate-900 z-50  transform transition-transform duration-300 flex flex-col 
-    ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}">
+    <aside className={`lg:hidden fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-slate-900 to-slate-950 text-white via-slate-900 z-50 transform transition-transform duration-300 flex flex-col 
+    ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {sidebarContent}
     </aside>
     </>
