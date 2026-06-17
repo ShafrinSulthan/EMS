@@ -6,10 +6,12 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
 
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
     const isEditMode =!!initialData;
     
     const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
 
     try {
         setLoading(true);
@@ -148,6 +150,12 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
                 </div>
             </div>
         </div>
+
+        {error && (
+        <div className="card p-4 bg-red-50 border-red-200 text-red-700 text-sm">
+           {error}
+        </div>
+        )}
 
         {/* Button */}
 

@@ -13,21 +13,19 @@ const Employees = () => {
   const [editEmployee, setEditEmployee] = useState(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
 
-  const fetchEmployees = useCallback(() => {
+  const fetchEmployees = useCallback(async() => {
     setLoading(true)
-    const timer = setTimeout(() => {
         setEmployees(dummyEmployeeData.filter((emp) =>
-          selectedDept ? emp.department === selectedDept : true
-        ))
-      setLoading(false)
-    }, 1000)
-      
-      return () => clearTimeout(timer)
+          selectedDept ? emp.department === selectedDept : emp))
+        setTimeout(()=>{
+          setLoading(false)
+        },1000)
     }, [selectedDept])
+      
+      
 
   useEffect(()=>{
-    const cleanup = fetchEmployees()
-      return cleanup
+    fetchEmployees();
   }, [fetchEmployees])
 
   const filtered =employees.filter((emp)=>
