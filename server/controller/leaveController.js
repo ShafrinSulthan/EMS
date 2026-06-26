@@ -56,7 +56,7 @@ export const createLeave =async(req, res)=>{
 //get leave
 // GET /api/leaves
 
-export const getLeave =async(req, res)=>{
+export const getLeaves =async(req, res)=>{
     try {
         const session = req.session;
         const isAdmin = session.role === "ADMIN";
@@ -104,7 +104,7 @@ export const getLeave =async(req, res)=>{
 //UPDATE leave
 // PATCH /api/leaves/:id
 
-export const updateLeave =async(req, res)=>{
+export const updateLeaveStatus =async(req, res)=>{
     try {
         const { status } = req.body;
 
