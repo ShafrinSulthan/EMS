@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { createEmployees, deleteeEmployees, getEmployees, updateEmployees } from "../controller/employeeController"
+import { createEmployees, deleteeEmployees, getEmployees, updateEmployees } from "../controller/employeeController.js"
 import { protect, protectAdmin } from "../middleware/auth.js"
 
 const employeesRouter = Router()

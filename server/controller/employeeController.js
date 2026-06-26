@@ -1,6 +1,6 @@
-import Employee from "../models/Employee";
+import Employee from "../models/Employee.js";
 import bcrypt from "bcrypt";
-import User from "../models/Users.js"
+import User from "../models/User.js"
 
 //Get employees
 // Get /api/employees
@@ -78,7 +78,7 @@ export const createEmployees = async (req, res) => {
 
 export const updateEmployees = async (req, res) => {
     try {
-        const {id} = req.params:
+        const {id} = req.params 
         const {firstName, lastName, email, phone, position, department, basicSalary, employmentStatus,
             allowances, deductions, password, role, bio} = req.body;
 
