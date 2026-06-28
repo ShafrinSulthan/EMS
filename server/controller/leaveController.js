@@ -1,5 +1,6 @@
 //create leave
 
+import { inngest } from "../inngest/index.js";
 import Employee from "../models/Employee.js";
 import LeaveApllication from "../models/LeaveApplication.js";
 
@@ -119,9 +120,11 @@ export const updateLeaveStatus =async(req, res)=>{
         { status }, { returnDocument: "after" }
         );
 
-        return res.json({
-        success: true, data: leave
-        });
+        await inngest.send ({
+            name: "leave/pending",
+            data: {LeaveApllicationId: leave._id}
+        })
+        return res.json({success: true, data: leave});
                 
     } catch (error) {
         returnres.status(500).json({error:"Failed"})
