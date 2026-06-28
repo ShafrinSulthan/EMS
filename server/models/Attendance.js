@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const attendenceSchema = new mongoose.Schema({
+const AttendanceSchema = new mongoose.Schema({
     employeeId: {type: mongoose.Schema.Types.ObjectId, ref: "Employee", required: true},
     date: { type: Date, required: true},
     checkIn: { type: Date, default: null},
@@ -10,7 +10,7 @@ const attendenceSchema = new mongoose.Schema({
     dayType: { type: String, enum: ["Full Day", "Three Quarter Day", "Half Day", "Short Day", null], default: null}
 },{timestamps: true})
 
-attendenceSchema.index({employeeId: 1, date: 1}, {unique: true})
-const Attendence = mongoose.model.Attendence || mongoose.model("Attendence",attendenceSchema)
+AttendanceSchema.index({employeeId: 1, date: 1}, {unique: true})
+const Attendance = mongoose.model.Attendance || mongoose.model("Attendance",AttendanceSchema)
 
-export default Attendence;
+export default Attendance;
