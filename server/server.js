@@ -33,7 +33,8 @@ app.use("/api/payslips",payslipRouter)
 app.use("/api/dashbord",dashboardRouter)
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
-
+console.log("INNGEST_SIGNING_KEY exists:", !!process.env.INNGEST_SIGNING_KEY);
+console.log("INNGEST_EVENT_KEY exists:", !!process.env.INNGEST_EVENT_KEY);
 
 await connectDB()
 app.listen(PORT, ()=> console.log(`Server runing on port ${PORT}`))
