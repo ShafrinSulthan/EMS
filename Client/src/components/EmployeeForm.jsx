@@ -1,6 +1,8 @@
 import { Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import api from "../api/axios.js";
 
 const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
 
@@ -10,38 +12,47 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
     const isEditMode =!!initialData;
     
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
+e.preventDefault();
+setLoading(true);
 
-    try {
-        setLoading(true);
+const formData = new FormData(e.currentTarget);
 
-        const formData = new FormData(e.target);
+if (isEditMode) {
+    const pwd = formData.get("password");
+    if (!pwd) formData.delete("password");
+}
 
-        const employeeData = Object.fromEntries(formData.entries());
+try {
+    const url = isEditMode
+        ? `/employees/${initialData.id}`
+        : "/employees";
 
+    const method = isEditMode ? "put" : "post";
 
-        // TODO: Create or Update API call
-        if (!isEditMode) {
-            e.target.reset();
-        }
+    await api[method](url, formData);
 
-        if (onSuccess) {
-            onSuccess();
-        }
+    onSuccess
+        ? onSuccess()
+        : navigate("/employees");
 
-    } catch (error) {
-        setError(error.message || "Failed to save employee. Please try again.");
-    } finally {
-        setLoading(false);
+} catch (error) {
+    toast.error(error.response?.data?.error || error.message);
+} finally{
+    setLoading(false)
+}
     }
-};
     const DEPARTMENT = [
-        "HR",
-        "IT",
-        "Finance",
-        "Marketing"
-    ];
+    "Engineering",
+    "Human Resources",
+    "Marketing",
+    "Sales",
+    "Finance",
+    "Operations",
+    "IT Support",
+    "Customer Success",
+    "Product Management",
+    "Design"
+];
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl animate-fade-in">
 
@@ -123,7 +134,7 @@ const EmployeeForm = ({initialData, onSuccess, onCancel}) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-sm text-slate-700">
                 <div className="sm:col-span-2">
                     <label className="block mb-2">Work Email</label>
-                    <input type="email" name="workEmail" required defaultValue={initialData?.workEmail || ""}></input>
+                    <input type="email" name="email" required defaultValue={initialData?.email || ""}></input>
                 </div>
                 <div>
                     <label className="block mb-2">Personal Email</label>

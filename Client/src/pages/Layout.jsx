@@ -1,17 +1,24 @@
+import Loading from "../components/Loading";
+import { useAuth } from "../context/AutoContext";
 import Sidebar from "../Sidebar";
-import { Outlet } from "react-router-dom"
+import { Outlet, Navigate } from "react-router-dom";
 
 const Layout = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return <Loading />;
+  if (!user) return <Navigate to="/login" replace />;
+
   return (
     <div className="flex h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50/30">
-        <Sidebar/>
-        <main className="flex-1 overflow-y-auto">
-            <div className="p-4 pt-16 sm:p-6 lg:p-8 sm:pt-6 max-w-4xl mx-auto">
-                <Outlet /> 
-            </div>
-        </main>
+      <Sidebar />
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 pt-16 sm:p-6 lg:p-8 sm:pt-6 max-w-4xl mx-auto">
+          <Outlet />
+        </div>
+      </main>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

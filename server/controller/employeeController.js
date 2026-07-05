@@ -7,7 +7,9 @@ import User from "../models/User.js"
 export const getEmployees = async (req, res) => {
     try {
         const { department } = req.query;
-        const where = {};
+        const where = {
+    isDeleted: false
+};
 
         if (department) {
             where.department = department;
@@ -45,7 +47,11 @@ export const createEmployees = async (req, res) => {
     try {
         const {firstName, lastName, email, phone, position, department, basicSalary, allowances, deductions, joinDate,
             password, role, bio} = req.body;
-
+            console.log(req.body);
+console.log("email:", email);
+console.log("password:", password);
+console.log("firstName:", firstName);
+console.log("lastName:", lastName);
         if (!email || !password || !firstName || !lastName) {
             return res.status(400).json({
                 error: "Missing required fields"
@@ -60,17 +66,23 @@ export const createEmployees = async (req, res) => {
         const employee =await Employee.create({
             userId: user._id, firstName, lastName,email, phone, position,
             department: department || "Engineering",basicSalary: Number(basicSalary) || 0, allowances: Number(allowances) || 0, 
-            deductions: Number(deductions) || 0, joinDate : Number(joinDate) || Date.now(), bio: bio || "",
+            deductions: Number(deductions) || 0, joinDate: joinDate || Date.now(), bio: bio || "",
         })
         return res.status(201).json({success: true, employee})
 
     } catch (error) {
-        if(error.code === 11000){
-            return res.status(400).json({ error: "Email already exists"})
-        }
-        console.error("Create employee error:",error)
-        return res.status(500).json({error:"Failed to create employee"})
+    if (error.code === 11000) {
+        return res.status(400).json({
+            error: error.message
+        });
     }
+
+    console.error("Create employee error:", error);
+
+    return res.status(500).json({
+        error: "Failed to create employee"
+    });
+}
 }
 
 //Update employee
@@ -78,49 +90,105 @@ export const createEmployees = async (req, res) => {
 
 export const updateEmployees = async (req, res) => {
     try {
-        const {id} = req.params 
-        const {firstName, lastName, email, phone, position, department, basicSalary, employmentStatus,
-            allowances, deductions, password, role, bio} = req.body;
+        const { id } = req.params;
 
-        
-        await Employee.findByIdAndUpdate({
-            userId: user._id, firstName, lastName,email, phone, position,
-            department: department || "Engineering",basicSalary: Number(basicSalary) || 0, allowances: Number(allowances) || 0, 
-            deductions: Number(deductions) || 0,employmentStatus: employmentStatus || "ACTIVE", bio: Number(bio) || "",
-        })
+        const {
+            firstName,
+            lastName,
+            email,
+            phone,
+            position,
+            department,
+            basicSalary,
+            employmentStatus,
+            allowances,
+            deductions,
+            password,
+            role,
+            bio,
+        } = req.body;
 
-        //Update user record
-        const userUpdate = {email}
-        if(role) userUpdate.role = role;
-        if(password) userUpdate.password = await bcrypt.hash(password, 10);
-        await User.findByIdAndUpdate(employee.userId, userUpdate)
+        // Find employee first
+        const employee = await Employee.findById(id);
 
-        return res.json({success: true})
+        if (!employee) {
+            return res.status(404).json({
+                error: "Employee not found",
+            });
+        }
+
+        // Update employee
+        employee.firstName = firstName;
+        employee.lastName = lastName;
+        employee.email = email;
+        employee.phone = phone;
+        employee.position = position;
+        employee.department = department;
+        employee.basicSalary = Number(basicSalary);
+        employee.allowances = Number(allowances);
+        employee.deductions = Number(deductions);
+        employee.employmentStatus = employmentStatus;
+        employee.bio = bio || "";
+
+        await employee.save();
+
+        // Update user
+        const userUpdate = { email };
+
+        if (role) {
+            userUpdate.role = role;
+        }
+
+        if (password) {
+            userUpdate.password = await bcrypt.hash(password, 10);
+        }
+
+        await User.findByIdAndUpdate(employee.userId, userUpdate);
+
+        return res.json({
+            success: true,
+        });
 
     } catch (error) {
-        if(error.code === 11000){
-            return res.status(400).json({ error: "Email already exists"})
-        }
-        return res.status(500).json({error:"Failed to create employee"})
+        console.error("Update employee error:", error);
+
+        return res.status(500).json({
+            error: error.message,
+        });
     }
-}
+};
 
 //Delete employee
 // Delete /api/employees/:id
 
 export const deleteeEmployees = async (req, res) => {
+    console.log("DELETE API HIT")
+    console.log(req.params)
     try {
-        const {id} = req.params;
+        const { id } = req.params;
 
-        const employee =await Employee.findById(id)
-        if(!employee) return res.status(404).json({error: "Employee not found"});
+        const employee = await Employee.findById(id);
+
+        if (!employee) {
+            return res.status(404).json({
+                error: "Employee not found",
+            });
+        }
 
         employee.isDeleted = true;
-        employee,employmentStatus = 'INACTIVE'
-        await employee.save()
-        return res.json({success: ture});
+        employee.employmentStatus = "INACTIVE";
+
+        await employee.save();
+
+        return res.json({
+            success: true,
+        });
 
     } catch (error) {
-        return res.status(500).json({error: "Failed to delete employee"})
+        console.error("Delete employee error:", error);
+
+        return res.status(500).json({
+            error: error.message,
+        });
     }
-}
+};

@@ -1,5 +1,5 @@
 import { inngest } from "../inngest/index.js";
-import Attendence from "../models/Attendance.js";
+import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
 
 // Clock in/out for employee
@@ -23,7 +23,7 @@ export const clockInOut = async (req, res) => {
     const today = new Date();
     today.setHours(0,0,0,0)
 
-    const existing = await Attendence.findOne({
+    const existing = await Attendance .findOne({
         employeeId: employee._id,
         date: today,
     })
@@ -35,13 +35,17 @@ export const clockInOut = async (req, res) => {
             status: isLate ? "LATE" : "PRESENT"
         });
 
-        await inngest.send({
-          name: "employee/check-out",
-          data: {
-            employeeId: employee._id,
-            attendanceId: attendance._id,
-          }
-        })
+       try {
+  await inngest.send({
+    name: "employee/check-out",
+    data: {
+      employeeId: employee._id,
+      attendanceId: attendance._id,
+    },
+  });
+} catch (err) {
+  console.log("Inngest is not running. Skipping event.");
+}
 
         return res.json({
             success: true,type: "CHECK_IN", data: attendance

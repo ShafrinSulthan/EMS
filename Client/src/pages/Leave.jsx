@@ -1,23 +1,40 @@
 import { useCallback, useEffect, useState } from "react"
 import Loading from "../components/Loading"
 import { PalmtreeIcon, PlusIcon, ThermometerIcon, UmbrellaIcon } from "lucide-react"
-import { dummyLeaveData } from "../assets/assets"
 import LeaveHistory from "../components/leave/LeaveHistory"
 import ApplyLeaveModal from "../components/leave/ApplyLeaveModal"
+import { useAuth } from "../context/AutoContext"
+import toast from "react-hot-toast"
+import api from "../api/axios"
 
 const Leave = () => {
+  const {user} = useAuth()
   const [leave, setLeave] = useState([])
   const [loading, setLoading] = useState(true)
   const [isDeleted, setIsDeleted] = useState(false)
   const [showModal, setShowModal] = useState(false)
-  const isAdmin = true;
+  const isAdmin = user?.role === "ADMIN";
   
-  const fetchLeave = useCallback(()=>{
-    setLeave(dummyLeaveData)
-    setTimeout(()=> {
-      setLoading(false)
-    },1000)
-  },[])
+ const fetchLeave = useCallback(async () => {
+  try {
+    const res = await api.get("/leave");
+
+    console.log("Leave API Response:", res.data);
+
+    setLeave(res.data.data || []);
+
+    // Only update isDeleted if employee exists
+    if (res.data.employee) {
+      setIsDeleted(res.data.employee.isDeleted);
+    } else {
+      setIsDeleted(false);
+    }
+  } catch (error) {
+    toast.error(error?.response?.data?.error || error.message);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect (()=>{
     fetchLeave()
@@ -36,6 +53,7 @@ const Leave = () => {
     {label: "Annual Leave", value: annualCount, icon: PalmtreeIcon},
 
   ]
+
   return (
     <div className="animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

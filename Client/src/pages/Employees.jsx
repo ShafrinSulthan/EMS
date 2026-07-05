@@ -3,7 +3,7 @@ import { dummyEmployeeData, DEPARTMENTS } from "../assets/assets"
 import { Plus, Search, X } from "lucide-react"
 import EmployeeCard from "../components/EmployeeCard"
 import EmployeeForm from "../components/EmployeeForm"
-
+import api from "../api/axios.js";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([])
@@ -14,12 +14,18 @@ const Employees = () => {
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const fetchEmployees = useCallback(async() => {
-    setLoading(true)
-        setEmployees(dummyEmployeeData.filter((emp) =>
-          selectedDept ? emp.department === selectedDept : emp))
-        setTimeout(()=>{
-          setLoading(false)
-        },1000)
+    try {
+    const url = selectedDept
+        ? `/employees?department=${selectedDept}`
+        : "/employees";
+
+    const res = await api.get(url);
+    setEmployees(res.data);
+} catch (error) {
+    console.error("Failed to fetch employees");
+} finally {
+    setLoading(false);
+}
     }, [selectedDept])
       
       
@@ -30,7 +36,14 @@ const Employees = () => {
 
   const filtered =employees.filter((emp)=>
      `${emp.firstName} ${emp.lastName} ${emp.position}`.toLowerCase().includes(search.toLowerCase()))
-
+const handleDelete = async (employee) => {
+  try {
+    await api.delete(`/employees/${employee.id}`);
+    fetchEmployees();
+  } catch (error) {
+    console.error(error);
+  }
+};
   return (
     <div className="animate-fade-in">
       {/* header */}
@@ -78,7 +91,7 @@ const Employees = () => {
                 No employees found
               </p>
             ) : (
-              filtered.map((emp)=> <EmployeeCard key={emp.id} employee={emp} onDelete={fetchEmployees} onEdit={(e) => setEditEmployee(e)}/>)
+              filtered.map((emp)=> <EmployeeCard key={emp.id} employee={emp} onDelete={handleDelete} onEdit={(e) => setEditEmployee(e)}/>)
             )
           }
         </div>

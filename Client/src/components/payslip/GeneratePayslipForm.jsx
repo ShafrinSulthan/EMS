@@ -1,5 +1,7 @@
 import { Loader2, Plus, X } from "lucide-react"
 import { useState } from "react"
+import toast from "react-hot-toast"
+import api from "../../api/axios"
 
 const GeneratePayslipForm = ({employees, onSuccess}) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -13,6 +15,18 @@ const GeneratePayslipForm = ({employees, onSuccess}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries())
+        try {
+            await api.post('/payslips',data)
+            setIsOpen(false)
+            onSuccess()
+        } catch (error) {
+            toast.error(error.response?.data?.error || error?.message);
+        }finally{
+ setLoading(false)
+        }
     }
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
@@ -63,7 +77,7 @@ const GeneratePayslipForm = ({employees, onSuccess}) => {
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Basic Salary</label>
-                    <input type="number"required placeholder="5000"></input>
+                    <input type="number"  name="basicSalary" required placeholder="5000"></input>
                 </div>
 
                 {/* Allowances & Deduction */}
@@ -71,11 +85,11 @@ const GeneratePayslipForm = ({employees, onSuccess}) => {
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Allowances</label>
-                        <input type="number"required placeholder="allowances" defaultValue="0"></input>
+                        <input type="number"  name="allowances" required placeholder="allowances" defaultValue="0"></input>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">Deductions</label>
-                        <input type="number"required placeholder="deductions" defaultValue="0"></input>
+                        <input type="number"required   name="deductions" placeholder="deductions" defaultValue="0"></input>
                     </div>
                 </div>
 
