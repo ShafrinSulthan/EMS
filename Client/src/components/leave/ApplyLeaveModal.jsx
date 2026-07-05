@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { CalendarDays, FileText, Loader2, Send, X } from "lucide-react";
+import api from "../../api/axios.js";
+import toast from "react-hot-toast";
 
 const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -13,12 +15,23 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setLoading(true);
+    setLoading(false);
+    const formData = new FormData(e.currentTarget)
+    const data = Object.fromEntries(formData.entries())
 
-    setTimeout(() => { setLoading(false);
-      onSuccess?.();
-      onClose();
-    }, 1000);
+    try {
+        await api.post('/leave',data)
+        onSuccess();
+        onClose();
+    } catch (error) {
+    toast.error(
+        error.response?.data?.error || error.message
+    );
+}
+finally {
+    setLoading(false);
+}
+    
   };
 
   if (!open) return null;
@@ -71,23 +84,24 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
             </label>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="block text-xs text-slate-400 mb-1">
-                  From
-                </span>
+  <div>
+    <span className="block text-xs text-slate-400 mb-1">
+      From
+    </span>
 
-                <input name="startDate" required min={minDate}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none"/>
-              </div>
-              <div>
-                <span className="block text-xs text-slate-400 mb-1">
-                  To
-                </span>
+    <input type="date" name="startDate"required min={minDate}
+      className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none"/>
+  </div>
 
-                <input type="date" name="endDate" required min={minDate}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none"/>
-              </div>
-            </div>
+  <div>
+    <span className="block text-xs text-slate-400 mb-1">
+      To
+    </span>
+
+    <input type="date"name="endDate"requiredmin={minDate}
+      className="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none"/>
+  </div>
+</div>
           </div>
 
           {/* Reason */}

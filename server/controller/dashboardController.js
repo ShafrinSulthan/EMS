@@ -1,75 +1,98 @@
-
-
-//Get dashbord for employee and admin
-
 import { DEPARTMENTS } from "../constant/Department.js";
 import Employee from "../models/Employee.js";
 import Attendance from "../models/Attendance.js";
 import LeaveApplication from "../models/LeaveApplication.js";
 import Payslip from "../models/Payslip.js";
-//GET /api/dashbord
+
+// GET /api/dashboard
 export const getDashboard = async (req, res) => {
   try {
     const session = req.session;
 
+    // ===================== ADMIN DASHBOARD =====================
     if (session.role === "ADMIN") {
-      const [totalEmployees, todayAttendance, pendingLeaves] = await Promise.all([
-        Employee.countDocuments({
-          isDeleted: { $ne: true }
-        }),
+      const [totalEmployees, todayAttendance, pendingLeaves] =
+        await Promise.all([
+          Employee.countDocuments({
+            isDeleted: { $ne: true },
+          }),
 
-        Attendance.countDocuments({
-          date: {
-            $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-            $lt: new Date(new Date().setHours(24, 0, 0, 0)),
-          },
-        }),
+          Attendance.countDocuments({
+            date: {
+              $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+              $lt: new Date(new Date().setHours(24, 0, 0, 0)),
+            },
+          }),
 
-        LeaveApplication.countDocuments({
-          status: "PENDING",
-        }),
-      ]);
+          LeaveApplication.countDocuments({
+            status: "PENDING",
+          }),
+        ]);
 
       return res.json({
         role: "ADMIN",
         totalEmployees,
         totalDepartments: DEPARTMENTS.length,
         todayAttendance,
-        pendingLeaves
-    });
-    
+        pendingLeaves,
+      });
     }
-    else{
-        const employee = await Employee.findOne({
-        userId: session.userId,
-        }).lean();
 
-        if (!employee) {
-        return res.status(404).json({ error: "Employee not found" });
-        }
+    // ===================== EMPLOYEE DASHBOARD =====================
+    const employee = await Employee.findOne({
+      userId: session.userId,
+    }).lean();
 
-        const today = new Date();
+    if (!employee) {
+      return res.status(404).json({
+        error: "Employee not found",
+      });
+    }
 
-        const [currentMounthAttendance, pendingLeaves] = await Promise.all([
+    const today = new Date();
+
+    const [currentMonthAttendance, pendingLeaves, latestPayslip] =
+      await Promise.all([
         Attendance.countDocuments({
-            employeeId: employee._id,
-            date: {
+          employeeId: employee._id,
+          date: {
             $gte: new Date(today.getFullYear(), today.getMonth(), 1),
-            $lt: new Date(today.getFullYear(), today.getMonth()+1 , 1),
-
-            },
+            $lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
+          },
         }),
-        LeaveApplication.countDocuments({employeeId: employee._id}).sort({createAt: -1}).lean(),
-        ]);
-    }
+
+        LeaveApplication.countDocuments({
+          employeeId: employee._id,
+          status: "PENDING",
+        }),
+
+        Payslip.findOne({
+          employeeId: employee._id,
+        })
+          .sort({ createdAt: -1 })
+          .lean(),
+      ]);
 
     return res.json({
-        role: "EMPLOYEE",
-        employee: {...employee,id: employee._id.toString(),},
-        currentMonthAttendance,
-        pendingLeaves,
-        latestPayslip: latestPayslip ? { ...latestPayslip, id: latestPayslip._id.toString(), } : null,});
+      role: "EMPLOYEE",
+      employee: {
+        ...employee,
+        id: employee._id.toString(),
+      },
+      currentMonthAttendance,
+      pendingLeaves,
+      latestPayslip: latestPayslip
+        ? {
+            ...latestPayslip,
+            id: latestPayslip._id.toString(),
+          }
+        : null,
+    });
   } catch (error) {
-    console.error("Dashbord error:", error)
+    console.error("Dashboard error:", error);
+
+    return res.status(500).json({
+      error: "Internal Server Error",
+    });
   }
 };

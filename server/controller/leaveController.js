@@ -2,7 +2,7 @@
 
 import { inngest } from "../inngest/index.js";
 import Employee from "../models/Employee.js";
-import LeaveApllication from "../models/LeaveApplication.js";
+import LeaveApplication from "../models/LeaveApplication.js";
 
 // POST /api/leaves
 export const createLeave =async(req, res)=>{
@@ -38,18 +38,20 @@ export const createLeave =async(req, res)=>{
         if (new Date(startDate) <= today ||new Date(endDate) <= today) {
         return res.status(400).json({error: "leave dates must be in the future"})
         }
-        if (new Date(endDate) <= today ||new Date(startDate)) {
-        return res.status(400).json({error: "End date cannot be before start date"})
-        }
+        if (new Date(endDate) < new Date(startDate)) {
+    return res.status(400).json({
+        error: "End date cannot be before start date"
+    });
+}
 
-        const leave = await LeaveApllication.create({
+        const leave = await LeaveApplication.create({
             employeeId: employee._id,type, startDate: new Date(startDate), endDate: new Date(endDate), reason, status: "PENDING",
         })
 
         return res.json({success: true,data: leave})
 
         } catch (error) {
-            returnres.status(500).json({error:"Failed"})
+            return res.status(500).json({error:"Failed"})
         }
 }
 
@@ -72,8 +74,11 @@ export const getLeaves =async(req, res)=>{
             const obj = l.toObject();
 
             return {
-            ...obj, id: obj._id.toString(),employee: obj.employeeId, employee: obj.employeeId?._id?.toString(),
-            };
+    ...obj,
+    id: obj._id.toString(),
+    employee: obj.employeeId,
+    employeeId: obj.employeeId?._id?.toString(),
+};
         })
         return res.json({data})
         } else {
@@ -94,11 +99,11 @@ export const getLeaves =async(req, res)=>{
 
         return res.json({
             data: leaves,
-            employee: {...employee,id: employee._id.toSt}
+            employee: {...employee,id: employee._id.toString()}
         });
         }
     } catch (error) {
-        returnres.status(500).json({error:"Failed"})
+        return res.status(500).json({error:"Failed"})
     }
 }
 
@@ -120,14 +125,16 @@ export const updateLeaveStatus =async(req, res)=>{
         { status }, { returnDocument: "after" }
         );
 
-        await inngest.send ({
-            name: "leave/pending",
-            data: {LeaveApllicationId: leave._id}
-        })
+        await inngest.send({
+  name: "leave/pending",
+  data: {
+    leaveApplicationId: leave._id,
+  },
+});
         return res.json({success: true, data: leave});
                 
     } catch (error) {
-        returnres.status(500).json({error:"Failed"})
+        return res.status(500).json({error:"Failed"})
 
     }
 }

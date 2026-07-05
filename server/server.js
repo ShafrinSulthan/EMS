@@ -12,6 +12,8 @@ import payslipRouter from "./routes/payslipsRouter.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
 import {serve} from "inngest/express"
 import { inngest, functions } from "./inngest/index.js";
+import mongoose from "mongoose";
+
 const app = express()
 const PORT = process.env.PORT || 4000;
 
@@ -30,11 +32,13 @@ app.use("/api/profile",ProfileRouter)
 app.use("/api/attendance",attendanceRouter)
 app.use("/api/leave",leaveRouter)
 app.use("/api/payslips",payslipRouter)
-app.use("/api/dashbord",dashboardRouter)
+app.use("/api/dashboard", dashboardRouter)
 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 console.log("INNGEST_SIGNING_KEY exists:", !!process.env.INNGEST_SIGNING_KEY);
 console.log("INNGEST_EVENT_KEY exists:", !!process.env.INNGEST_EVENT_KEY);
 
 await connectDB()
+
+console.log("Connected Database:", mongoose.connection.name);
 app.listen(PORT, ()=> console.log(`Server runing on port ${PORT}`))
