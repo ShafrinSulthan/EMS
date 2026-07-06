@@ -10,32 +10,12 @@ export const getProfile = async (req, res) => {
       userId: session.userId,
     });
 
-    // Employee Profile
-    if (employee) {
-      return res.json(employee);
-    }
-
-    // Admin Profile
-    const user = await User.findById(session.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        error: "User not found",
-      });
-    }
-
-    return res.json({
-      firstName: "Admin",
-      lastName: "",
-      email: user.email,
-      bio: user.bio || "",
-      position: "",
-    });
-
+    // ...
   } catch (error) {
-    console.log(error);
+    console.error("PROFILE ERROR:", error);
+
     return res.status(500).json({
-      error: "Failed to fetch profile",
+      error: error.message,
     });
   }
 };
