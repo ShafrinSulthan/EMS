@@ -22,10 +22,10 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://ems-six-brown.vercel.app"
+    "https://ems-lime-seven.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.use(express.json())
