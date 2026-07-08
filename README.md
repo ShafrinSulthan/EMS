@@ -9,7 +9,8 @@
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)
 ![Render](https://img.shields.io/badge/Backend-Render-blue)
 
-</p>
+</p><img width="959" height="520" alt="image" src="https://github.com/user-attachments/assets/9fca9689-07ce-4338-8a44-b81e24ed5fce" />
+
 
 <p align="center">
 A modern Full Stack Employee Management System built using React, Node.js, Express.js, MongoDB, and JWT Authentication.
@@ -264,8 +265,7 @@ Through this project, I gained practical experience in:
 ---
 
 Watch the complete project demo below:
-
-https://github.com/ShafrinSulthan/EMS/blob/master/Client/src/assets/demo/EMS.mp4
+[EMS.mp4](https://drive.google.com/file/d/1_8IesvJk9qrzVCI0G09hUYKn21od3WZ8/view?usp=sharing)
 
 ---
 
