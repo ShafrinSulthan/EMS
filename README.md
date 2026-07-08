@@ -257,29 +257,15 @@ Through this project, I gained practical experience in:
 
 # 📸 Screenshots
 
-> Add your project screenshots here.
+## Responsive UI
 
-Example:
-
-```md
-![Login Page](Client/src/assets/demo/login.png)
-
-![Dashboard](Client/src/assets/demo/dashboard.png)
-
-![Employee Management](Client/src/assets/demo/employees.png)
-```
+![EMS Responsive UI](Client/src/assets/demo/EMS_Responsive.png)
 
 ---
 
-# 🎥 Project Demo
+Watch the complete project demo below:
 
-> Add your demo video link here after uploading it.
-
-Example:
-
-```
-https://github.com/user-attachments/assets/your-video-link
-```
+https://github.com/ShafrinSulthan/EMS/blob/master/Client/src/assets/demo/EMS.mp4
 
 ---
 
