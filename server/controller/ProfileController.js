@@ -1,6 +1,7 @@
 import Employee from "../models/Employee.js";
 import User from "../models/User.js";
 
+
 // GET /api/profile
 export const getProfile = async (req, res) => {
   try {
@@ -10,7 +11,21 @@ export const getProfile = async (req, res) => {
       userId: session.userId,
     });
 
-    // ...
+    // Employee profile
+    if (employee) {
+      return res.json(employee);
+    }
+
+    const user = await User.findById(session.userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    return res.json(user);
+
   } catch (error) {
     console.error("PROFILE ERROR:", error);
 
