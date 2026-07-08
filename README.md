@@ -9,7 +9,7 @@
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)
 ![Render](https://img.shields.io/badge/Backend-Render-blue)
 
-</p><img width="959" height="520" alt="image" src="https://github.com/user-attachments/assets/9fca9689-07ce-4338-8a44-b81e24ed5fce" />
+
 
 
 <p align="center">
